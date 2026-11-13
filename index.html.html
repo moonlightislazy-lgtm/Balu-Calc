@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Barracks Calculator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800&display=swap">
+<style>
+:root{--bg:#c9f0ff;--sky1:#5ec8f2;--sky2:#d8f4ff;--card:#fff7df;--field:#fff;--ink:#16365c;--mute:#55708f;--line:#16365c;--acc:#ff8a1f;--ok:#2fb344;--bad:#e5383b;--bar:#ff8a1f;--btn:#ffd23f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d4a7e;--sky1:#0f2a50;--sky2:#2a5f9a;--card:#21436f;--field:#13294a;--ink:#f6f1dc;--mute:#a9c1e0;--line:#08172e;--ok:#5bd46c;--bad:#ff7b7e}}
+:root[data-theme="dark"]{--bg:#1d4a7e;--sky1:#0f2a50;--sky2:#2a5f9a;--card:#21436f;--field:#13294a;--ink:#f6f1dc;--mute:#a9c1e0;--line:#08172e;--ok:#5bd46c;--bad:#ff7b7e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);background:linear-gradient(var(--sky1),var(--sky2)) fixed;font:700 16px/1.45 Nunito,system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px 14px 56px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font:400 2.5rem/1.05 "Lilita One",Impact,sans-serif;margin:4px 0 6px;color:#fff;letter-spacing:.02em;text-shadow:-2px -2px 0 var(--line),2px -2px 0 var(--line),-2px 2px 0 var(--line),2px 2px 0 var(--line),0 5px 0 var(--line)}
+.sub{color:var(--ink);margin:0;font-weight:600;opacity:.8}
+h2{display:inline-flex;align-items:center;gap:8px;font:400 1.3rem/1.2 "Lilita One",Impact,sans-serif;margin:0 0 14px;padding:4px 16px 4px 10px;color:#fff;background:#d9480f;border:3px solid var(--line);border-radius:14px;box-shadow:0 4px 0 var(--line);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.ic{font-size:1.3rem;filter:drop-shadow(0 2px 0 rgba(0,0,0,.3))}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tools select{width:auto}
+button,select,input{font:800 16px Nunito,system-ui,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);border:3px solid var(--line);border-radius:12px;padding:8px 12px;min-height:44px;background:var(--field)}
+input,select{width:100%;box-shadow:inset 0 3px 0 rgba(0,0,0,.1)}
+button{font-family:"Lilita One",Nunito,sans-serif;font-weight:400;color:#16365c;background:var(--btn);box-shadow:0 4px 0 var(--line);cursor:pointer;transition:transform .05s}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px}
+.tile{position:relative;overflow:hidden;border:4px solid var(--line);border-radius:20px;padding:10px 14px 12px;box-shadow:0 6px 0 var(--line);color:var(--ink)}
+.tile::before{content:"";position:absolute;left:0;right:0;top:0;height:45%;background:rgba(255,255,255,.3)}
+.tile:nth-child(1){background:#7fdc78}.tile:nth-child(2){background:#5ab9ff}.tile:nth-child(3){background:#ffd23f}.tile:nth-child(4){background:#ff9a3d}
+.tile.ok{background:#7fdc78!important}.tile.bad{background:#ff7b7e!important}
+.tile span{position:relative;display:block;font-weight:800;font-size:.85rem;color:#16365c}
+.tile b{position:relative;font:400 2.3rem/1.15 "Lilita One",sans-serif;color:#16365c;font-variant-numeric:tabular-nums;text-shadow:0 2px 0 rgba(255,255,255,.55)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
+section{background:var(--card);border:4px solid var(--line);border-radius:22px;box-shadow:0 7px 0 var(--line);padding:16px}
+label{display:block;font-size:.85rem;color:var(--mute);margin:10px 0 4px;font-weight:800}
+label.ck{display:flex;align-items:center;gap:10px;color:var(--ink);font-size:1rem;margin-top:12px}
+.ck input{width:22px;height:22px;min-height:0;padding:0;accent-color:var(--acc);box-shadow:none}
+dl{margin:12px 0 0;border-top:3px dashed rgba(22,54,92,.3)}
+dl div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:3px dashed rgba(22,54,92,.3)}
+dt{color:var(--mute);font-weight:700}dd{margin:0;font-weight:800;font-variant-numeric:tabular-nums;text-align:right}
+.hh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.hh label{margin:0 0 14px}
+.bar{height:24px;background:var(--field);border:3px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;position:relative;background:var(--acc);border-radius:0 10px 10px 0;transition:width .25s}
+.bar i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 8px,transparent 8px 16px)}
+.wide{grid-column:1/-1}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>div{flex:1;min-width:150px}
+.q{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.q span{color:var(--mute);font-size:.85rem;font-weight:800}
+.note{color:var(--mute);font-size:.85rem;margin:12px 0 0;font-weight:600}
+.ib{margin-top:14px;width:100%;font-size:.95rem}
+dialog{max-width:560px;width:calc(100% - 28px);max-height:88vh;overflow:auto;border:4px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);box-shadow:0 8px 0 var(--line);padding:16px}
+dialog::backdrop{background:rgba(10,30,60,.55)}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.steps{padding:0;list-style:none;counter-reset:s;margin:0}
+.steps li{counter-increment:s;margin:0 0 16px;padding-left:46px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;border:3px solid var(--line);display:flex;align-items:center;justify-content:center;font:400 1.1rem "Lilita One",sans-serif}
+.steps p{margin:0 0 8px}
+.steps svg{width:100%;max-width:260px;display:block;background:var(--field);border:3px solid var(--line);border-radius:14px}
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+<div><h1 data-i="title"></h1><p class="sub" data-i="sub"></p></div>
+<div class="tools">
+<select id="lang" aria-label="Language"><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="zh">中文</option></select>
+<select id="prof" aria-label="Profile"></select>
+<button id="theme" type="button">◐</button>
+<button id="reset" type="button" data-i="reset"></button>
+</div>
+</header>
+
+<div class="tiles">
+<div class="tile"><span data-i="td"></span><b id="k1"></b></div>
+<div class="tile"><span data-i="tw"></span><b id="k2"></b></div>
+<div class="tile"><span data-i="tpt"></span><b id="k3"></b></div>
+<div class="tile" id="k4t"><span id="k4l"></span><b id="k4"></b></div>
+</div>
+
+<div class="grid">
+<section>
+<h2><span class="ic">🪖</span><span data-i="barracks"></span></h2>
+<dl style="margin:0 0 4px">
+<div><dt data-i="nb"></dt><dd>4</dd></div>
+<div><dt data-i="tpr"></dt><dd>1</dd></div>
+<div><dt data-i="trd"></dt><dd id="fx"></dd></div>
+</dl>
+<label for="tier" data-i="tier"></label><select id="tier"><option value="140">T6</option><option value="160">T7</option><option value="180">T8</option><option value="200">T9</option><option value="220">T10</option></select>
+<button type="button" id="info" class="ib">ⓘ <span data-i="where"></span></button>
+<label for="bn" data-i="bn"></label><input id="bn" type="number" min="0" step="0.5">
+<label for="bs" data-i="bs"></label><input id="bs" type="number" min="0" step="0.5">
+<label class="ck"><input id="of" type="checkbox"><span data-i="office"></span></label>
+<label for="d" data-i="dw"></label><input id="d" type="number" min="1">
+</section>
+
+<section>
+<h2><span class="ic">⚙️</span><span data-i="production"></span></h2>
+<dl>
+<div><dt data-i="tpt"></dt><dd id="o_t"></dd></div>
+<div><dt data-i="eff"></dt><dd id="o_eff"></dd></div>
+<div><dt data-i="pbd"></dt><dd id="o_bday"></dd></div>
+<div><dt data-i="td"></dt><dd id="o_day"></dd></div>
+<div><dt data-i="tw"></dt><dd id="o_week"></dd></div>
+</dl>
+</section>
+
+<section>
+<div class="hh"><h2><span class="ic">🏥</span><span data-i="hospital"></span></h2><label class="ck" style="margin:0;font-size:.85rem"><input id="hd" type="checkbox"><span data-i="excl"></span></label></div>
+<label for="h1" data-i="cap"></label><input id="h1" type="number" min="0">
+<label for="hx" data-i="ecap"></label><input id="hx" type="number" min="0" step="0.5">
+<label class="ck"><input id="ho" type="checkbox"><span data-i="office"></span></label>
+<label class="ck" style="margin-top:8px"><input id="hp" type="checkbox"><span data-i="prof"></span></label>
+<dl><div><dt data-i="tcap"></dt><dd id="o_hcap"></dd></div></dl>
+</section>
+
+<section>
+<h2><span class="ic">🎖️</span><span data-i="drill"></span></h2>
+<label for="dc" data-i="cap"></label><input id="dc" type="number" min="0">
+<label for="dn" data-i="curr"></label><input id="dn" type="number" min="0">
+<div class="bar"><i id="dbar"></i></div>
+<dl>
+<div><dt data-i="util"></dt><dd id="d_pct"></dd></div>
+<div><dt data-i="free"></dt><dd id="d_free"></dd></div>
+<div><dt data-i="fullin"></dt><dd id="d_full"></dd></div>
+</dl>
+</section>
+
+<section class="wide">
+<h2><span class="ic">🎯</span><span data-i="target"></span></h2>
+<div class="row">
+<div><label for="st" data-i="start"></label><input id="st" type="datetime-local"></div>
+<div><label for="tg" data-i="tgt"></label><input id="tg" type="datetime-local"></div>
+</div>
+<div class="q"><span data-i="qb"></span><button type="button" data-q="1"></button><button type="button" data-q="3"></button><button type="button" data-q="7"></button></div>
+<div class="bar"><i id="gbar"></i></div>
+<dl>
+<div><dt data-i="tuntil"></dt><dd id="g_time"></dd></div>
+<div><dt data-i="pun"></dt><dd id="g_prod"></dd></div>
+<div><dt data-i="mind"></dt><dd id="g_drill"></dd></div>
+<div id="rb"><dt data-i="minb"></dt><dd id="g_both"></dd></div>
+<div><dt data-i="yc"></dt><dd id="g_cur"></dd></div>
+<div><dt data-i="ok"></dt><dd id="g_ok"></dd></div>
+</dl>
+<p class="note" data-i="assume"></p>
+</section>
+</div>
+</main>
+
+<dialog id="dlg">
+<div class="dh"><h2><span class="ic">ℹ️</span><span data-i="wt"></span></h2><button type="button" id="dx" aria-label="Close">✕</button></div>
+<ol class="steps">
+<li><p data-i="w1"></p><svg viewBox="0 0 220 110" aria-hidden="true"><path d="M60 46 L110 12 L160 46 Z" fill="#ff8a1f" stroke="#16365c" stroke-width="3" stroke-linejoin="round"/><rect x="70" y="46" width="80" height="34" rx="5" fill="#ffd9a0" stroke="#16365c" stroke-width="3"/><text x="110" y="69" text-anchor="middle" font-size="15" font-weight="800" fill="#16365c" data-i="hq"></text><circle cx="36" cy="82" r="14" fill="#5ab9ff" stroke="#16365c" stroke-width="3"/><circle cx="110" cy="96" r="12" fill="#5ab9ff" stroke="#16365c" stroke-width="3"/><circle cx="184" cy="82" r="14" fill="#5ab9ff" stroke="#16365c" stroke-width="3"/></svg></li>
+<li><p data-i="w2"></p><svg viewBox="0 0 220 90" aria-hidden="true"><circle cx="110" cy="45" r="40" fill="none" stroke="#ffd23f" stroke-width="4" stroke-dasharray="6 5"/><circle cx="110" cy="45" r="32" fill="#5ab9ff" stroke="#16365c" stroke-width="4"/><rect x="92" y="52" width="9" height="12" fill="#fff" stroke="#16365c" stroke-width="2"/><rect x="106" y="45" width="9" height="19" fill="#fff" stroke="#16365c" stroke-width="2"/><rect x="120" y="38" width="9" height="26" fill="#fff" stroke="#16365c" stroke-width="2"/><path d="M90 40 L106 28 L113 33 L132 20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
+<li><p data-i="w3"></p><svg viewBox="0 0 220 130" aria-hidden="true"><rect x="8" y="6" width="204" height="118" rx="10" fill="#fff7df" stroke="#16365c" stroke-width="3"/><rect x="16" y="14" width="56" height="20" rx="5" fill="#cfd8e6" stroke="#16365c" stroke-width="2"/><rect x="78" y="14" width="56" height="20" rx="5" fill="#cfd8e6" stroke="#16365c" stroke-width="2"/><rect x="140" y="14" width="64" height="20" rx="5" fill="#ffd23f" stroke="#16365c" stroke-width="2"/><g font-size="10" font-weight="800" fill="#16365c" text-anchor="middle"><text x="44" y="28" data-i="tsh"></text><text x="106" y="28" data-i="tco"></text><text x="172" y="28" data-i="ten"></text></g><rect x="16" y="42" width="170" height="16" rx="4" fill="#e6e9f2"/><rect x="16" y="62" width="170" height="16" rx="4" fill="#ffe7b0" stroke="#ff8a1f" stroke-width="2"/><rect x="16" y="82" width="170" height="16" rx="4" fill="#ffe7b0" stroke="#ff8a1f" stroke-width="2"/><rect x="16" y="102" width="170" height="14" rx="4" fill="#e6e9f2"/><g font-size="10" font-weight="800" fill="#16365c" text-anchor="end"><text x="178" y="74">+ ? %</text><text x="178" y="94">+ ? %</text></g><path d="M198 50 V108 M192 100 L198 110 L204 100" stroke="#16365c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></li>
+<li><p data-i="w4"></p></li>
+</ol>
+<p class="note" data-i="wn"></p>
+</dialog>
+
+<script>
+const $=id=>document.getElementById(id);
+const LANGS=["en","de","fr","zh"],LOC={en:"en-US",de:"de-DE",fr:"fr-FR",zh:"zh-CN"};
+const K={
+hq:"HQ|HQ|QG|总部",
+tsh:"Shield|Schild|Bouclier|护盾",
+tco:"Combat|Kampf|Combat|战斗",
+ten:"Economy|Wirtschaft|Économie|经济",
+where:"Where do I find these %?|Wo finde ich diese %?|Où trouver ces % ?|在哪里能找到这些百分比？",
+wt:"Finding your buffs|So findest du deine Buffs|Où trouver vos bonus|如何查看你的加成",
+w1:"Tap your Headquarters. Round buttons appear around it.|Tippe auf dein Hauptquartier. Rundherum erscheinen runde Buttons.|Touchez votre QG (quartier général). Des boutons ronds apparaissent autour.|点击你的总部，周围会出现圆形按钮。",
+w2:"Tap the round button with the rising arrow and three bars.|Tippe auf den runden Button mit dem Pfeil und den drei Balken darunter.|Touchez le bouton rond avec la flèche montante et les trois barres.|点击带有上升箭头和三根柱子的圆形按钮。",
+w3:"In the Buffs window open the Economy tab and scroll far down.|Öffne im Buffs-Fenster den Reiter Wirtschaft und scrolle ganz weit nach unten.|Dans la fenêtre Bonus, ouvrez l’onglet Économie et faites défiler tout en bas.|在加成窗口中打开“经济”标签页，并一直向下滚动。",
+w4:"Find “Increase number of Units trained each time” and “Increase Unit Training Speed” and enter both percentages here.|Suche „Erhöhung der Truppenzahl pro Training“ und „Erhöhung der Trainingsgeschwindigkeit“ und trage beide Prozentwerte hier ein.|Trouvez « Augmente le nombre d’Unités formées à chaque fois » et « Augmente le Vitesse de Formation des Unités » et saisissez les deux pourcentages ici.|找到“每次训练数量提升”和“训练速度提升”，把两个百分比填到这里。",
+wn:"The checkbox “With Office” adds +20 % on top of your values. If the game value already includes the Office bonus, leave it unticked.|Das Kästchen „Mit Office“ addiert +20 % auf deine Werte. Wenn der Spielwert den Office-Bonus schon enthält, lass es aus.|La case « Avec Office » ajoute +20 % à vos valeurs. Si la valeur du jeu inclut déjà le bonus Office, laissez-la décochée.|勾选“有办公室”会在你填的数值上再加 20%。如果游戏里的数值已包含办公室加成，请不要勾选。",
+tier:"Troop tier|Truppenstufe|Niveau de troupe|兵种等级",
+k4a:"Troops needed for full DG and hospital|Benötigte Truppen für vollen DG und Hospital|Troupes nécessaires pour terrain et hôpital pleins|填满训练场和医院所需兵力",
+k4b:"Troops needed for full DG|Benötigte Truppen für vollen DG|Troupes nécessaires pour terrain plein|填满训练场所需兵力",
+title:"Barracks Calculator|Barracks-Rechner|Calculateur de casernes|兵营计算器",
+sub:"Change any value and the results update instantly.|Ändere beliebige Werte, die Ergebnisse aktualisieren sich sofort.|Modifiez une valeur : les résultats se mettent à jour instantanément.|修改任意数值，结果会即时更新。",
+reset:"Reset|Zurücksetzen|Réinitialiser|重置",
+profile:"Profile|Profil|Profil|配置",
+td:"Total per day|Gesamt pro Tag|Total par jour|每日总计",
+tw:"Total per week|Gesamt pro Woche|Total par semaine|每周总计",
+tpt:"Time per troop|Zeit pro Truppe|Temps par troupe|每个士兵耗时",
+mind:"Troops needed for full DG|Benötigte Truppen für vollen DG|Troupes nécessaires pour terrain plein|填满训练场所需兵力",
+barracks:"Barracks|Barracks|Casernes|兵营",
+nb:"Number of barracks|Anzahl Barracks|Nombre de casernes|兵营数量",
+tpr:"Troops per run|Truppen pro Durchlauf|Troupes par cycle|每次训练数量",
+trd:"Time per run|Dauer pro Durchlauf|Durée par cycle|每次训练时间",
+bn:"Increase number of units trained each time (%)|Erhöhung der Truppenzahl pro Training (%)|Augmente le nombre d’Unités formées à chaque fois (%)|每次训练数量提升（%）",
+bs:"Increase unit training speed (%)|Erhöhung der Trainingsgeschwindigkeit (%)|Augmente le Vitesse de Formation des Unités (%)|训练速度提升（%）",
+office:"With Office|Mit Office|Avec Office|有办公室",
+prof:"With Profession|Mit Profession|Avec Profession|有职业",
+dw:"Days per week|Tage pro Woche|Jours par semaine|每周天数",
+cmp:"Compare with other buffs|Mit anderen Buffs vergleichen|Comparer avec d’autres bonus|与其他加成对比",
+cbn:"Compare: amount buff (%)|Vergleich: Anzahl-Buff (%)|Comparaison : bonus de nombre (%)|对比：数量加成（%）",
+cbs:"Compare: speed buff (%)|Vergleich: Tempo-Buff (%)|Comparaison : bonus de vitesse (%)|对比：速度加成（%）",
+production:"Production|Produktion|Production|产量",
+eff:"Effective buffs (amount / speed)|Wirksame Buffs (Anzahl / Tempo)|Bonus effectifs (nombre / vitesse)|实际加成（数量 / 速度）",
+pbd:"Troops per barracks per day|Truppen pro Barracks und Tag|Troupes par caserne et par jour|每兵营每日产量",
+cday:"Compare: total per day|Vergleich: Gesamt pro Tag|Comparaison : total par jour|对比：每日总计",
+diff:"Difference per day|Unterschied pro Tag|Différence par jour|每日差值",
+hospital:"Hospital|Hospital|Hôpital|医院",
+excl:"Exclude from calculations|Von Berechnung ausschließen|Exclure des calculs|不计入计算",
+cap:"Capacity|Kapazität|Capacité|容量",
+ecap:"Existing capacity increase (%)|Bestehende Kapazitätserhöhung (%)|Augmentation de capacité existante (%)|现有容量提升（%）",
+tcap:"Total capacity|Gesamtkapazität|Capacité totale|总容量",
+excd:"excluded|ausgeschlossen|exclu|已排除",
+drill:"Drillground|Drillground|Terrain d’entraînement|训练场",
+curr:"Current troop amount|Aktuelle Truppenanzahl|Effectif actuel de troupes|当前兵力",
+util:"Utilization|Auslastung|Utilisation|使用率",
+free:"Free space|Freier Platz|Espace libre|剩余空间",
+fullin:"Full in|Voll in|Plein dans|填满还需",
+full:"full|voll|plein|已满",
+target:"Target planning|Zielplanung|Planification de l’objectif|目标规划",
+start:"Start date and time|Startzeitpunkt|Date et heure de début|开始时间",
+tgt:"Target date and time|Zielzeitpunkt|Date et heure cible|目标时间",
+qb:"Quick target:|Schnellziel:|Objectif rapide :|快速目标：",
+tuntil:"Time until target|Zeit bis zum Ziel|Temps jusqu’à l’objectif|距离目标",
+pun:"Production until then|Produktion bis dahin|Production d’ici là|期间产量",
+minb:"Troops needed for full DG and hospital|Benötigte Truppen für vollen DG und Hospital|Troupes nécessaires pour terrain et hôpital pleins|填满训练场和医院所需兵力",
+yc:"Current troop amount|Aktuelle Truppenanzahl|Effectif actuel de troupes|当前兵力",
+ok:"Will production cover the need by the target?|Deckt die Produktion den Bedarf bis zum Ziel?|La production couvre-t-elle le besoin d’ici l’objectif ?|到目标时间产量能否满足需求？",
+assume:"Assumption: production runs without pause and all produced troops count toward the total.|Annahme: Die Produktion läuft ohne Pause durch und alle produzierten Truppen zählen zum Bestand.|Hypothèse : la production tourne sans interruption et toutes les troupes produites comptent dans l’effectif.|假设：生产不间断进行，所有产出的兵力都计入总数。",
+d:"days|Tage|jours|天",
+h:"h|Std|h|小时",
+before:"target is before start|Ziel liegt vor dem Start|l’objectif précède le début|目标早于开始时间",
+yes:"Yes, {n} to spare|Ja, {n} Puffer|Oui, {n} de marge|足够，富余 {n}",
+no:"No, {n} short|Nein, {n} fehlen|Non, il manque {n}|不足，缺少 {n}"
+};
+let L="en";
+const tr=k=>K[k].split("|")[LANGS.indexOf(L)];
+const f=(x,dd=0)=>x.toLocaleString(LOC[L],{maximumFractionDigits:dd});
+const fmtT=s=>{s=Math.round(s);const m=Math.floor(s/60),r=s%60;return L==="zh"?m+"分"+r+"秒":m+" min "+r+" s"};
+const S={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const IDS=["tier","bn","bs","of","d","h1","hx","ho","hp","hd","dc","dn","tg"];
+const DEF={tier:"160",bn:8,bs:14.5,of:false,d:7,h1:9991,hx:28,ho:false,hp:false,hd:false,dc:48258,dn:36115,tg:null};
+const p2=x=>String(x).padStart(2,"0");
+const fm=d=>d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())+"T"+p2(d.getHours())+":"+p2(d.getMinutes());
+let P=S.get("bc_cur")||"1";
+
+function setVals(o){
+  IDS.forEach(i=>{const e=$(i);if(i==="tg")return;if(e.type==="checkbox")e.checked=!!o[i];else e.value=o[i]});
+  const t=o.tg&&new Date(o.tg)>new Date()?o.tg:fm(new Date(Date.now()+7*864e5));
+  $("tg").value=t;
+}
+function getVals(){const o={};IDS.forEach(i=>{const e=$(i);o[i]=e.type==="checkbox"?e.checked:e.value});return o}
+function loadProfile(){let o=DEF;try{const r=S.get("bc_p"+P);if(r)o=Object.assign({},DEF,JSON.parse(r))}catch(e){}setVals(o)}
+function save(){S.set("bc_p"+P,JSON.stringify(getVals()));calc()}
+
+function calc(){
+  const v=id=>Math.max(0,parseFloat($(id).value)||0),c=id=>$(id).checked;
+  const off=c("of")?20:0,spd=v("bs")+off,cnt=v("bn")+off,d=v("d");
+  const base=v("tier")||160,secT=base/(1+spd/100),bday=Math.round(86400/secT),day=bday*4,week=day*d;
+  $("fx").textContent=fmtT(base);
+  $("o_t").textContent=fmtT(secT);
+  $("o_eff").textContent="+"+f(cnt,1)+" % / +"+f(spd,1)+" %";
+  $("o_bday").textContent=f(bday);
+  $("o_day").textContent=f(day);
+  $("o_week").textContent=f(week);
+  $("k1").textContent=f(day);$("k2").textContent=f(week);$("k3").textContent=fmtT(secT);
+  const exc=c("hd");
+  ["h1","hx","ho","hp"].forEach(i=>$(i).disabled=exc);
+  const hb=20*c("ho")+50*c("hp"),hex=v("hx");
+  const hcap=exc?0:Math.round(v("h1")/(1+hex/100)*(1+(hex+hb)/100));
+  $("o_hcap").textContent=exc?tr("excd"):f(hcap);
+  const cap=v("dc"),cur=v("dn"),free=Math.max(0,cap-cur),pct=cap>0?Math.min(100,cur/cap*100):0;
+  $("dbar").style.width=pct+"%";
+  $("d_pct").textContent=f(pct,1)+" %";
+  $("d_free").textContent=f(free);
+  $("d_full").textContent=free===0?tr("full"):(day>0?f(free/day,1)+" "+tr("d"):"–");
+  const st=$("st").value,tg=$("tg").value;
+  const t0=st?new Date(st).getTime():Date.now(),ms=tg?new Date(tg).getTime()-t0:0;
+  const days=ms>0?ms/864e5:0,prod=Math.round(day*days);
+  const needD=Math.max(0,cap-cur),needB=Math.max(0,cap+hcap-cur),need=exc?needD:needB;
+  const dd=Math.floor(days),hh=Math.floor((days-dd)*24);
+  $("g_time").textContent=ms>0?dd+" "+tr("d")+" "+hh+" "+tr("h"):tr("before");
+  $("g_prod").textContent=f(prod);
+  $("g_drill").textContent=f(needD);
+  $("g_both").textContent=f(needB);
+  $("rb").style.display=exc?"none":"";
+  $("g_cur").textContent=f(cur);
+  const diff=prod-need,good=diff>=0;
+  $("g_ok").textContent=tr(good?"yes":"no").replace("{n}",f(Math.abs(diff)));
+  $("k4").textContent=f(need);$("k4l").textContent=tr(exc?"k4b":"k4a");
+  $("k4t").className="tile "+(good?"ok":"bad");
+  const gb=$("gbar");const tot=cap+(exc?0:hcap);gb.style.width=(tot>0?Math.min(100,(cur+prod)/tot*100):0)+"%";
+  gb.style.background=good?"var(--ok)":"var(--bad)";
+}
+
+function applyLang(){
+  document.documentElement.lang=L;
+  document.title=tr("title");
+  document.querySelectorAll("[data-i]").forEach(e=>e.textContent=tr(e.dataset.i));
+  document.querySelectorAll("[data-q]").forEach(b=>b.textContent="+"+b.dataset.q+" "+tr("d"));
+  const sel=$("prof"),cv=P;sel.innerHTML="";
+  for(let n=1;n<=3;n++){const o=document.createElement("option");o.value=n;o.textContent=tr("profile")+" "+n;sel.appendChild(o)}
+  sel.value=cv;
+  calc();
+}
+function applyTheme(t){
+  if(t==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",t);
+  $("theme").textContent={auto:"◐",light:"☀",dark:"☾"}[t];
+}
+
+L=S.get("bc_lang")||"en";if(!LANGS.includes(L))L="en";
+$("lang").value=L;
+let TH=S.get("bc_th")||"auto";applyTheme(TH);
+document.querySelectorAll("input[type=number]").forEach(i=>i.setAttribute("inputmode","decimal"));
+loadProfile();
+$("st").value=fm(new Date());
+applyLang();
+
+document.querySelectorAll("input").forEach(i=>i.addEventListener("input",save));
+$("tier").addEventListener("change",save);
+$("info").addEventListener("click",()=>$("dlg").showModal());
+$("dx").addEventListener("click",()=>$("dlg").close());
+$("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
+$("lang").addEventListener("change",e=>{L=e.target.value;S.set("bc_lang",L);applyLang()});
+$("prof").addEventListener("change",e=>{P=e.target.value;S.set("bc_cur",P);loadProfile();calc()});
+$("theme").addEventListener("click",()=>{TH=TH==="auto"?"light":TH==="light"?"dark":"auto";S.set("bc_th",TH);applyTheme(TH)});
+$("reset").addEventListener("click",()=>{setVals(DEF);$("st").value=fm(new Date());save()});
+document.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>{
+  const base=$("st").value?new Date($("st").value).getTime():Date.now();
+  $("tg").value=fm(new Date(base+parseInt(b.dataset.q)*864e5));save();
+}));
+</script>
+</body>
+</html>
