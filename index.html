@@ -98,6 +98,7 @@ dialog::backdrop{background:rgba(10,30,60,.55)}
 
 <section>
 <h2><span class="ic">⚙️</span><span data-i="production"></span></h2>
+<label class="ck" style="margin:0 0 4px"><input id="mob" type="checkbox"><span data-i="mob"></span></label>
 <dl>
 <div><dt data-i="tpt"></dt><dd id="o_t"></dd></div>
 <div><dt data-i="eff"></dt><dd id="o_eff"></dd></div>
@@ -109,6 +110,7 @@ dialog::backdrop{background:rgba(10,30,60,.55)}
 
 <section>
 <div class="hh"><h2><span class="ic">🏥</span><span data-i="hospital"></span></h2><label class="ck" style="margin:0;font-size:.85rem"><input id="hd" type="checkbox"><span data-i="excl"></span></label></div>
+<button type="button" id="info2" class="ib" style="margin:0 0 4px">ⓘ <span data-i="hi_btn"></span></button>
 <label for="h1" data-i="cap"></label><input id="h1" type="number" min="0">
 <label for="hx" data-i="ecap"></label><input id="hx" type="number" min="0" step="0.5">
 <label class="ck"><input id="ho" type="checkbox"><span data-i="office"></span></label>
@@ -134,7 +136,7 @@ dialog::backdrop{background:rgba(10,30,60,.55)}
 <div><label for="st" data-i="start"></label><input id="st" type="datetime-local"></div>
 <div><label for="tg" data-i="tgt"></label><input id="tg" type="datetime-local"></div>
 </div>
-<div class="q"><span data-i="qb"></span><button type="button" data-q="1"></button><button type="button" data-q="3"></button><button type="button" data-q="7"></button></div>
+<div class="q"><span data-i="qb"></span><button type="button" data-q="1"></button><button type="button" data-q="2"></button><button type="button" data-q="7"></button></div>
 <div class="bar"><i id="gbar"></i></div>
 <dl>
 <div><dt data-i="tuntil"></dt><dd id="g_time"></dd></div>
@@ -160,10 +162,30 @@ dialog::backdrop{background:rgba(10,30,60,.55)}
 <p class="note" data-i="wn"></p>
 </dialog>
 
+<dialog id="dlg2">
+<div class="dh"><h2><span class="ic">🏥</span><span data-i="hi_t"></span></h2><button type="button" id="dx2" aria-label="Close">✕</button></div>
+<ol class="steps">
+<li><p data-i="hi_1"></p></li>
+<li><p data-i="hi_2"></p></li>
+<li><p data-i="hi_3"></p></li>
+<li><p data-i="hi_4"></p></li>
+</ol>
+</dialog>
+
 <script>
 const $=id=>document.getElementById(id);
 const LANGS=["en","de","fr","zh"],LOC={en:"en-US",de:"de-DE",fr:"fr-FR",zh:"zh-CN"};
 const K={
+hi_btn:"How do I fill my hospital?|Wie fülle ich mein Hospital?|Comment remplir mon hôpital ?|如何填满医院？",
+hi_t:"Filling your hospital|So füllst du dein Hospital|Remplir votre hôpital|如何填满医院",
+hi_1:"Find a friend from another alliance on your server, or a VS opponent on Saturday, and agree on a plan together.|Such dir einen Freund aus einer anderen Allianz auf deinem Server oder am Samstag einen VS-Gegner und sprich dich mit ihm ab.|Trouvez un ami d’une autre alliance de votre serveur, ou un adversaire VS le samedi, et mettez-vous d’accord.|在你的服务器上找一位其他联盟的好友，或在周六找 VS 对手，并提前商量好。",
+hi_2:"Fight each other on resource tiles to fill your hospital.|Kämpft gegeneinander auf Ressourcen-Tiles, um dein Hospital zu füllen.|Combattez-vous sur des mines de ressources pour remplir votre hôpital.|在资源点上互相战斗，以填满你的医院。",
+hi_3:"You must be the defender, so your team stands on the tile.|Du musst der Verteidiger sein, dein Team steht also auf dem Tile.|Vous devez être le défenseur : votre équipe se trouve sur la mine.|你必须是防守方，也就是你的队伍驻守在该资源点上。",
+hi_4:"Match your teams so that “Killed” shows 0 for both sides in the battle report statistics.|Passt die Teams so aneinander an, dass in der Statistik des Kampfberichts bei beiden Seiten „Gefallen“ auf 0 steht.|Ajustez vos équipes pour que « Tués » affiche 0 des deux côtés dans les statistiques du rapport de combat.|调整双方队伍，使战报统计中双方的“阵亡”都是 0。",
+killed:"Killed|Gefallen|Tués|阵亡",
+def:"Defender|Verteidiger|Défenseur|防守方",
+att:"Attacker|Angreifer|Attaquant|进攻方",
+mob:"Unit Mobilization (+250 every 23.5 h)|Unit Mobilization (+250 alle 23,5 Std)|Mobilisation d’unités (+250 toutes les 23,5 h)|部队动员（每 23.5 小时 +250）",
 hq:"HQ|HQ|QG|总部",
 tsh:"Shield|Schild|Bouclier|护盾",
 tco:"Combat|Kampf|Combat|战斗",
@@ -236,8 +258,8 @@ const tr=k=>K[k].split("|")[LANGS.indexOf(L)];
 const f=(x,dd=0)=>x.toLocaleString(LOC[L],{maximumFractionDigits:dd});
 const fmtT=s=>{s=Math.round(s);const m=Math.floor(s/60),r=s%60;return L==="zh"?m+"分"+r+"秒":m+" min "+r+" s"};
 const S={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const IDS=["tier","bn","bs","of","d","h1","hx","ho","hp","hd","dc","dn","tg"];
-const DEF={tier:"160",bn:8,bs:14.5,of:false,d:7,h1:9991,hx:28,ho:false,hp:false,hd:false,dc:48258,dn:36115,tg:null};
+const IDS=["tier","mob","bn","bs","of","d","h1","hx","ho","hp","hd","dc","dn","tg"];
+const DEF={tier:"160",mob:false,bn:8,bs:14.5,of:false,d:7,h1:9991,hx:28,ho:false,hp:false,hd:false,dc:48258,dn:36115,tg:null};
 const p2=x=>String(x).padStart(2,"0");
 const fm=d=>d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())+"T"+p2(d.getHours())+":"+p2(d.getMinutes());
 let P=S.get("bc_cur")||"1";
@@ -254,7 +276,7 @@ function save(){S.set("bc_p"+P,JSON.stringify(getVals()));calc()}
 function calc(){
   const v=id=>Math.max(0,parseFloat($(id).value)||0),c=id=>$(id).checked;
   const off=c("of")?20:0,spd=v("bs")+off,cnt=v("bn")+off,d=v("d");
-  const base=v("tier")||160,secT=base/(1+spd/100),bday=Math.round(86400/secT),day=bday*4,week=day*d;
+  const base=v("tier")||160,secT=base/(1+spd/100),bday=Math.round(86400/secT),mob=c("mob")?250*24/23.5:0,dayX=bday*4+mob,day=Math.round(dayX),week=Math.round(dayX*d);
   $("fx").textContent=fmtT(base);
   $("o_t").textContent=fmtT(secT);
   $("o_eff").textContent="+"+f(cnt,1)+" % / +"+f(spd,1)+" %";
@@ -274,7 +296,7 @@ function calc(){
   $("d_full").textContent=free===0?tr("full"):(day>0?f(free/day,1)+" "+tr("d"):"–");
   const st=$("st").value,tg=$("tg").value;
   const t0=st?new Date(st).getTime():Date.now(),ms=tg?new Date(tg).getTime()-t0:0;
-  const days=ms>0?ms/864e5:0,prod=Math.round(day*days);
+  const days=ms>0?ms/864e5:0,prod=Math.round(dayX*days);
   const needD=Math.max(0,cap-cur),needB=Math.max(0,cap+hcap-cur),need=exc?needD:needB;
   const dd=Math.floor(days),hh=Math.floor((days-dd)*24);
   $("g_time").textContent=ms>0?dd+" "+tr("d")+" "+hh+" "+tr("h"):tr("before");
@@ -319,12 +341,15 @@ $("tier").addEventListener("change",save);
 $("info").addEventListener("click",()=>$("dlg").showModal());
 $("dx").addEventListener("click",()=>$("dlg").close());
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
+$("info2").addEventListener("click",()=>$("dlg2").showModal());
+$("dx2").addEventListener("click",()=>$("dlg2").close());
+$("dlg2").addEventListener("click",e=>{if(e.target===$("dlg2"))$("dlg2").close()});
 $("lang").addEventListener("change",e=>{L=e.target.value;S.set("bc_lang",L);applyLang()});
 $("prof").addEventListener("change",e=>{P=e.target.value;S.set("bc_cur",P);loadProfile();calc()});
 $("theme").addEventListener("click",()=>{TH=TH==="auto"?"light":TH==="light"?"dark":"auto";S.set("bc_th",TH);applyTheme(TH)});
 $("reset").addEventListener("click",()=>{setVals(DEF);$("st").value=fm(new Date());save()});
 document.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>{
-  const base=$("st").value?new Date($("st").value).getTime():Date.now();
+  const base=$("tg").value?new Date($("tg").value).getTime():($("st").value?new Date($("st").value).getTime():Date.now());
   $("tg").value=fm(new Date(base+parseInt(b.dataset.q)*864e5));save();
 }));
 </script>
